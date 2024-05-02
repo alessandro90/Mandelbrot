@@ -53,6 +53,7 @@ FetchContent_MakeAvailable(fmt)
 set(
     SRC_FILES
     src/main.cpp
+    src/program.cpp
 )
 
 add_executable(

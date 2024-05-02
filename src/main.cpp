@@ -9,11 +9,14 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
-#include <utility>
+#include <string_view>
 
-#include "shader.hpp"
+#include "program.hpp"
+
+using namespace std::string_view_literals;
 
 namespace {
+
 constexpr auto g_width = 800;
 constexpr auto g_height = 600;
 
@@ -104,18 +107,21 @@ auto main() -> int {
 
     // FIXME: We assume shaders are in the src directory (sibling of build)
     // and we assume the working directory is in fact 'build'
-    auto maybe_shader = Shader::make("../src/shader.vert", "../src/shader.frag");
-    if (!maybe_shader.has_value()) {
-        return EXIT_FAILURE;
-    }
-    auto const shader = std::move(maybe_shader).value();
+    auto const program = []() {
+        auto p = Program::create_and_link({"../src/shader.vert"sv, "../src/shader.frag"sv});
+        if (!p.has_value()) {
+            fmt::println(stderr, "Cannot create program.");
+            std::abort();
+        }
+        return std::move(p).value();
+    }();
+    program.use();
 
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);  // NOLINT
     glClear(GL_COLOR_BUFFER_BIT);
     while (glfwWindowShouldClose(window) == 0) {
         process_input(window);
 
-        shader.use();
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, static_cast<GLvoid *>(0));  // NOLINT
         glBindVertexArray(0);
