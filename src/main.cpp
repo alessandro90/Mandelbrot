@@ -1,3 +1,4 @@
+#include "buffer.hpp"
 #include "glad/glad.h"
 
 #include "GLFW/glfw3.h"
@@ -9,6 +10,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <span>
 #include <string_view>
 
 #include "program.hpp"
@@ -80,22 +82,9 @@ auto main() -> int {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
-    auto vbo = GLuint{};
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER,
-                 vertices.size() * sizeof(vertices[0]),
-                 vertices.data(),
-                 GL_STATIC_DRAW);
 
-    auto ebo = GLuint{};
-    glGenBuffers(1, &ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 indeces.size() * sizeof(indeces[0]),
-                 indeces.data(),
-                 GL_STATIC_DRAW);
-
+    auto const vbo = gl::StaticDrawBuffer::make(gl::BufferType::ARRAY, std::span{vertices});
+    auto const ebo = gl::StaticDrawBuffer::make(gl::BufferType::ELEMENT_ARRAY, std::span{indeces});
 
     glVertexAttribPointer(0,
                           3,
@@ -130,7 +119,5 @@ auto main() -> int {
         glfwSwapBuffers(window);
     }
     glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(1, &vbo);
-    glDeleteBuffers(1, &ebo);
     glfwTerminate();
 }
