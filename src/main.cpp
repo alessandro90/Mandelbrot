@@ -108,7 +108,7 @@ auto main() -> int {
     // FIXME: We assume shaders are in the src directory (sibling of build)
     // and we assume the working directory is in fact 'build'
     auto const program = []() {
-        auto p = Program::create_and_link({"../src/shader.vert"sv, "../src/shader.frag"sv});
+        auto p = gl::Program::create_and_link({"../src/shader.vert"sv, "../src/shader.frag"sv});
         if (!p.has_value()) {
             fmt::println(stderr, "Cannot create program.");
             std::abort();

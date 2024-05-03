@@ -6,6 +6,7 @@
 #include <optional>
 #include <string_view>
 
+namespace gl {
 class Program {
 public:
     [[nodiscard]] static auto create_and_link(std::initializer_list<std::string_view> shader_paths)
@@ -44,4 +45,5 @@ private:
     GLuint m_prog_id;
 };
 
+}  // namespace gl
 #endif

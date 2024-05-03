@@ -95,6 +95,8 @@ private:
 
 }  // namespace
 
+namespace gl {
+
 Program::Program(Program &&other) noexcept
     : m_prog_id{std::exchange(other.m_prog_id, s_invalid_program_id)} {
 }
@@ -150,3 +152,4 @@ Program::~Program() {
         glDeleteProgram(m_prog_id);
     }
 }
+}  // namespace gl
