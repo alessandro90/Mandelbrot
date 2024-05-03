@@ -79,20 +79,19 @@ auto main() -> int {
         // clang-format on
     };
 
-    auto const vao = gl::Vao{};
-    vao.bind();
-
-
-    auto const vbo = gl::StaticDrawBuffer::make(gl::BufferType::ARRAY, std::span{vertices});
-    auto const ebo = gl::StaticDrawBuffer::make(gl::BufferType::ELEMENT_ARRAY, std::span{indeces});
-
-    glVertexAttribPointer(0,
+    auto vao = gl::Vao{};
+    // VBO
+    vao.add_buffer(gl::BufferType::ARRAY, std::span{vertices});
+    // EBO
+    vao.add_buffer(gl::BufferType::ELEMENT_ARRAY, std::span{indeces});
+    vao.vertex_attrib_ptr(0,
                           3,
                           GL_FLOAT,
                           GL_FALSE,
-                          3 * sizeof(float),          // NOLINT
+                          3 * sizeof(float),
                           static_cast<GLvoid *>(0));  // NOLINT
-    glEnableVertexAttribArray(0);
+    vao.enable(0);
+    vao.bind();
 
     // FIXME: We assume shaders are in the src directory (sibling of build)
     // and we assume the working directory is in fact 'build'
@@ -111,9 +110,9 @@ auto main() -> int {
     while (glfwWindowShouldClose(window) == 0) {
         process_input(window);
 
-        vao.bind();
+        // vao.bind();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, static_cast<GLvoid *>(0));  // NOLINT
-        gl::Vao::unbind();
+        // gl::Vao::unbind();
 
         glfwPollEvents();
         glfwSwapBuffers(window);

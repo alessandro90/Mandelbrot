@@ -57,6 +57,10 @@ public:
                      GL_STATIC_DRAW);
     }
 
+    [[nodiscard]] auto id() const -> GLuint {
+        return m_buf;
+    }
+
 private:
     explicit StaticDrawBuffer(GLuint buf, BufferType type)
         : m_buf{buf}
