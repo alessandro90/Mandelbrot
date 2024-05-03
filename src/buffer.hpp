@@ -44,12 +44,12 @@ public:
         }
     }
 
-    void bind() const {
+    auto bind() const -> void {
         glBindBuffer(std::to_underlying(m_type), m_buf);
     }
 
     template <typename T, std::size_t N>
-    void set_data(std::span<T, N> data) const {
+    auto set_data(std::span<T, N> data) const -> void {
         bind();
         glBufferData(std::to_underlying(m_type),
                      data.size() * sizeof(data[0]),

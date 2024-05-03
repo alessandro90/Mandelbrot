@@ -14,6 +14,7 @@
 #include <string_view>
 
 #include "program.hpp"
+#include "vao.hpp"
 
 using namespace std::string_view_literals;
 
@@ -78,9 +79,8 @@ auto main() -> int {
         // clang-format on
     };
 
-    auto vao = GLuint{};
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+    auto const vao = gl::Vao{};
+    vao.bind();
 
 
     auto const vbo = gl::StaticDrawBuffer::make(gl::BufferType::ARRAY, std::span{vertices});
@@ -111,13 +111,12 @@ auto main() -> int {
     while (glfwWindowShouldClose(window) == 0) {
         process_input(window);
 
-        glBindVertexArray(vao);
+        vao.bind();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, static_cast<GLvoid *>(0));  // NOLINT
-        glBindVertexArray(0);
+        gl::Vao::unbind();
 
         glfwPollEvents();
         glfwSwapBuffers(window);
     }
-    glDeleteVertexArrays(1, &vao);
     glfwTerminate();
 }
