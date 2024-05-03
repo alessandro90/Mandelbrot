@@ -28,6 +28,20 @@ auto process_input(GLFWwindow *window) noexcept -> void {
         glfwSetWindowShouldClose(window, 1);
     }
 }
+
+auto draw() -> void {
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, static_cast<GLvoid *>(0));  // NOLINT
+}
+
+auto fill_bg() -> void {
+    glClearColor(0.0F, 0.0F, 0.0F, 1.0F);  // NOLINT
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
+auto set_viewport(int w, int h) {
+    glViewport(0, 0, w, h);
+}
+
 }  // namespace
 
 auto main() -> int {
@@ -57,10 +71,10 @@ auto main() -> int {
         return EXIT_FAILURE;
     }
 
-    glViewport(0, 0, g_width, g_height);
+    set_viewport(g_width, g_height);
 
     glfwSetFramebufferSizeCallback(window, [](GLFWwindow *, int w, int h) noexcept {  // NOLINT
-        glViewport(0, 0, w, h);
+        set_viewport(w, h);
     });
 
     static constexpr auto vertices = std::array{
@@ -105,13 +119,12 @@ auto main() -> int {
     }();
     program.use();
 
-    glClearColor(0.0F, 0.0F, 0.0F, 1.0F);  // NOLINT
-    glClear(GL_COLOR_BUFFER_BIT);
+    fill_bg();
     while (glfwWindowShouldClose(window) == 0) {
         process_input(window);
 
         // vao.bind();
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, static_cast<GLvoid *>(0));  // NOLINT
+        draw();
         // gl::Vao::unbind();
 
         glfwPollEvents();
