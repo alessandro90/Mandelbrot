@@ -54,6 +54,7 @@ set(
     SRC_FILES
     src/main.cpp
     src/program.cpp
+    src/glfw_wrapper.cpp
 )
 
 add_executable(

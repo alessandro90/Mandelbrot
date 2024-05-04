@@ -1,4 +1,3 @@
-#include "buffer.hpp"
 #include "glad/glad.h"
 
 #include "GLFW/glfw3.h"
@@ -10,9 +9,12 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <memory>
 #include <span>
 #include <string_view>
 
+#include "buffer.hpp"
+#include "glfw_wrapper.hpp"
 #include "program.hpp"
 #include "vao.hpp"
 
@@ -22,12 +24,6 @@ namespace {
 
 constexpr auto g_width = 800;
 constexpr auto g_height = 600;
-
-auto process_input(GLFWwindow *window) noexcept -> void {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, 1);
-    }
-}
 
 auto draw() -> void {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, static_cast<GLvoid *>(0));  // NOLINT
@@ -42,39 +38,37 @@ auto set_viewport(int w, int h) {
     glViewport(0, 0, w, h);
 }
 
+class OnFrameBuffferResize: public glfw::Window::OnFrameBufferResizeHandler {
+public:
+    // NOLINTNEXTLINE
+    auto on_resize(int w, int h) -> void override {
+        set_viewport(w, h);
+    }
+
+private:
+};
+
 }  // namespace
 
 auto main() -> int {
-    if (GLFW_FALSE == glfwInit()) {
-        fmt::println(stderr, "Failed to init GLFW");
-        return EXIT_FAILURE;
-    }
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    auto const resource_cleaner = glfw::init();
 
-    auto *window = glfwCreateWindow(g_width, g_height, "Learn OpenGL", nullptr, nullptr);
-    if (window == nullptr) {
-        fmt::println(stderr, "Cannot create window");
-        glfwTerminate();
-        return EXIT_FAILURE;
-    }
+    auto window = glfw::Window::make(resource_cleaner, g_width, g_height, "Mandelbrot"sv);
+    window.make_context_current();
 
-    glfwMakeContextCurrent(window);
-
-    if (gladLoadGLLoader([](const char *proc_name) noexcept -> void * {
-            return reinterpret_cast<void *>(glfwGetProcAddress(proc_name));  // NOLINT
-        })
-        == 0) {
+    if (gladLoadGLLoader(glfw::loader_fn) == 0) {
         fmt::println(stderr, "Failed to initialize GLAD");
-        glfwTerminate();
         return EXIT_FAILURE;
     }
 
     set_viewport(g_width, g_height);
 
-    glfwSetFramebufferSizeCallback(window, [](GLFWwindow *, int w, int h) noexcept {  // NOLINT
-        set_viewport(w, h);
+    window.set_on_frame_buffer_resize_handler(std::make_unique<OnFrameBuffferResize>());
+
+    window.add_callback([](glfw::Window &w) {
+        if (w.get_key(GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            w.set_should_close();
+        }
     });
 
     static constexpr auto vertices = std::array{
@@ -120,15 +114,10 @@ auto main() -> int {
     program.use();
 
     fill_bg();
-    while (glfwWindowShouldClose(window) == 0) {
-        process_input(window);
-
-        // vao.bind();
+    while (!window.should_close()) {
+        window.handle_input();
         draw();
-        // gl::Vao::unbind();
-
         glfwPollEvents();
-        glfwSwapBuffers(window);
+        window.swap_buffers();
     }
-    glfwTerminate();
 }
