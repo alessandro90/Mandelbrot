@@ -9,9 +9,11 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <functional>
 #include <memory>
 #include <span>
 #include <string_view>
+#include <utility>
 
 #include "buffer.hpp"
 #include "glfw_wrapper.hpp"
@@ -40,12 +42,19 @@ auto set_viewport(int w, int h) {
 
 class OnFrameBuffferResize: public glfw::Window::OnFrameBufferResizeHandler {
 public:
+    explicit OnFrameBuffferResize(gl::Program const &prog)
+        : m_prog{prog} {
+    }
+
     // NOLINTNEXTLINE
     auto on_resize(int w, int h) -> void override {
         set_viewport(w, h);
+        m_prog.get().set_uniform("view_port"sv,
+                                 std::pair{static_cast<float>(w), static_cast<float>(h)});
     }
 
 private:
+    std::reference_wrapper<gl::Program const> m_prog;
 };
 
 }  // namespace
@@ -63,7 +72,6 @@ auto main() -> int {
 
     set_viewport(g_width, g_height);
 
-    window.set_on_frame_buffer_resize_handler(std::make_unique<OnFrameBuffferResize>());
 
     window.add_callback([](glfw::Window &w) {
         if (w.get_key(GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -112,6 +120,7 @@ auto main() -> int {
         return std::move(p).value();
     }();
     program.use();
+    window.set_on_frame_buffer_resize_handler(std::make_unique<OnFrameBuffferResize>(program));
 
     fill_bg();
     while (!window.should_close()) {

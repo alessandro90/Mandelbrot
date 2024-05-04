@@ -5,6 +5,7 @@
 #include <initializer_list>
 #include <optional>
 #include <string_view>
+#include <utility>
 
 namespace gl {
 class Program {
@@ -28,6 +29,8 @@ public:
             glUniform1f(loc, value);
         } else if constexpr (std::is_same_v<T, GLint>) {
             glUniform1i(loc, value);
+        } else if constexpr (std::is_same_v<T, std::pair<float, float>>) {
+            glUniform2f(loc, value.first, value.second);
         } else {
             static_assert(false, "Unsupported uniform value");
         }
