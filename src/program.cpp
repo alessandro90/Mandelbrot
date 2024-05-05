@@ -144,7 +144,12 @@ auto Program::use() const -> void {
 }
 
 auto Program::get_uniform_location(std::string_view name) const -> GLint {
-    return glGetUniformLocation(m_prog_id, name.data());
+    auto const loc = glGetUniformLocation(m_prog_id, name.data());
+    if (loc == -1) {
+        fmt::println(stderr, "Invalid uniform name: {}", name);
+        std::abort();
+    }
+    return loc;
 }
 
 Program::~Program() {
