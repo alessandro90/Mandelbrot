@@ -55,6 +55,7 @@ set(
     src/main.cpp
     src/program.cpp
     src/glfw_wrapper.cpp
+    src/app.cpp
 )
 
 add_executable(
