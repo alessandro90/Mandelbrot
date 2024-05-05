@@ -595,9 +595,9 @@ void main() {
     if (iterations == MAX_ITERS) {
         FragColor = vec4(0.0f, 0.0f, 0.0f, 1.0);
     } else {
-        // vec3 color = rainbow(float(iterations) / MAX_ITERS);
+        vec3 color = rainbow(float(iterations) / MAX_ITERS);
         // vec3 color = inferno(float(iterations) / MAX_ITERS);
-        vec3 color = viridis(float(iterations) / MAX_ITERS);
+        // vec3 color = viridis(float(iterations) / MAX_ITERS);
         FragColor = vec4(color, 1.0);
     }
 }

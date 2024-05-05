@@ -1,4 +1,3 @@
-# https://jonathanhamberg.com/post/2019-01-27-cmake-dependencies-fetch-content/
 # to know opengl supported version:
 # glxinfo | grep "OpenGL version"
 cmake_minimum_required(VERSION 3.20)
