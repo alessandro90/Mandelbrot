@@ -3,6 +3,9 @@
 out vec4 FragColor;
 in vec4 gl_FragCoord;
 uniform vec2 view_port;
+uniform float x_offset;
+uniform float y_offset;
+uniform float zoom;
 
 #define MAX_ITERS 500U
 #define THRESHOLD 4.0f
@@ -29,8 +32,12 @@ uint calc_iters(float real, float imag) {
     return iterations;
 }
 
+vec2 real_imag() {
+    return (((gl_FragCoord.xy / view_port - vec2(0.7f, 0.5f)) * zoom) + vec2(x_offset, y_offset)) * 4.0f;
+}
+
 void main() {
-    vec2 normalized_xy = (gl_FragCoord.xy / view_port - vec2(0.7f, 0.5f)) * 4.0f;
+    vec2 normalized_xy = real_imag();
     uint iterations = calc_iters(normalized_xy.x, normalized_xy.y);
     if (iterations == MAX_ITERS) {
         FragColor = vec4(0.0f, 0.0f, 0.0f, 1.0);

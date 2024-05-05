@@ -29,6 +29,10 @@ namespace {
 constexpr auto g_width = 800;
 constexpr auto g_height = 600;
 
+constexpr auto g_x_offset_delta = 0.05F;
+constexpr auto g_y_offset_delta = 0.05F;
+constexpr auto g_zoom_delta = 1.025F;
+
 auto draw() -> void {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, static_cast<GLvoid *>(0));  // NOLINT
 }
@@ -61,6 +65,10 @@ private:
 
 }  // namespace
 
+auto App::scaling_factor() const -> float {
+    return m_zoom / s_default_zoom;
+}
+
 auto App::run() -> void {
     auto const resource_cleaner = glfw::init();
 
@@ -78,8 +86,11 @@ auto App::run() -> void {
     window.add_callback([](glfw::Window &w) {
         if (w.get_key(GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             w.set_should_close();
+            return true;
         }
+        return false;
     });
+
 
     static constexpr auto vertices = std::array{
         // clang-format off
@@ -122,6 +133,78 @@ auto App::run() -> void {
         return std::move(p).value();
     }();
     program.use();
+
+    program.set_uniform("x_offset"sv, m_x_offset);
+    program.set_uniform("y_offset"sv, m_y_offset);
+    program.set_uniform("zoom"sv, m_zoom);
+
+    window.add_callback([&](glfw::Window &w) {
+        if (w.get_key(GLFW_KEY_H) == GLFW_PRESS) {
+            m_x_offset += g_x_offset_delta * scaling_factor();
+            program.set_uniform("x_offset"sv, m_x_offset);
+            return true;
+        }
+        return false;
+    });
+
+    window.add_callback([&](glfw::Window &w) {
+        if (w.get_key(GLFW_KEY_L) == GLFW_PRESS) {
+            m_x_offset -= g_x_offset_delta * scaling_factor();
+            program.set_uniform("x_offset"sv, m_x_offset);
+            return true;
+        }
+        return false;
+    });
+
+    window.add_callback([&](glfw::Window &w) {
+        if (w.get_key(GLFW_KEY_J) == GLFW_PRESS) {
+            m_y_offset += g_y_offset_delta * scaling_factor();
+            program.set_uniform("y_offset"sv, m_y_offset);
+            return true;
+        }
+        return false;
+    });
+
+    window.add_callback([&](glfw::Window &w) {
+        if (w.get_key(GLFW_KEY_K) == GLFW_PRESS) {
+            m_y_offset -= g_y_offset_delta * scaling_factor();
+            program.set_uniform("y_offset"sv, m_y_offset);
+            return true;
+        }
+        return false;
+    });
+
+    window.add_callback([&](glfw::Window &w) {
+        if (w.get_key(GLFW_KEY_M) == GLFW_PRESS) {
+            m_zoom /= g_zoom_delta;
+            program.set_uniform("zoom"sv, m_zoom);
+            return true;
+        }
+        return false;
+    });
+
+    window.add_callback([&](glfw::Window &w) {
+        if (w.get_key(GLFW_KEY_N) == GLFW_PRESS) {
+            m_zoom *= g_zoom_delta;
+            program.set_uniform("zoom"sv, m_zoom);
+            return true;
+        }
+        return false;
+    });
+
+    window.add_callback([&](glfw::Window &w) {
+        if (w.get_key(GLFW_KEY_C) == GLFW_PRESS) {
+            m_x_offset = s_default_x_offset;
+            m_y_offset = s_default_y_offset;
+            m_zoom = s_default_zoom;
+            program.set_uniform("x_offset"sv, m_x_offset);
+            program.set_uniform("y_offset"sv, m_y_offset);
+            program.set_uniform("zoom"sv, m_zoom);
+            return true;
+        }
+        return false;
+    });
+
     window.set_on_frame_buffer_resize_handler(std::make_unique<OnFrameBuffferResize>(program));
 
     fill_bg();

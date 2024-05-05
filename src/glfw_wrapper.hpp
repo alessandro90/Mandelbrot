@@ -39,6 +39,8 @@ private:
 auto loader_fn(const char *proc_name) noexcept -> void *;
 
 class Window {
+    using Callback = std::function<bool(Window &)>;
+
 public:
     class OnFrameBufferResizeHandler {
     public:
@@ -66,7 +68,7 @@ public:
 
     [[nodiscard]] auto get_key(int key) -> int;
 
-    auto add_callback(std::function<void(Window &)> cb) -> void;
+    auto add_callback(Callback) -> void;
 
 private:
     explicit Window(GLFWwindow *window)
@@ -75,7 +77,7 @@ private:
 
     GLFWwindow *m_window;
     std::unique_ptr<OnFrameBufferResizeHandler> m_on_resize_handler;
-    std::vector<std::function<void(Window &)>> m_callbacks;
+    std::vector<Callback> m_callbacks;
 };
 }  // namespace glfw
 

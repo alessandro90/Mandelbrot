@@ -84,11 +84,13 @@ auto Window::get_key(int key) -> int {
 
 auto Window::handle_input() -> void {
     for (auto const &cb : m_callbacks) {
-        cb(*this);
+        if (cb(*this)) {
+            return;
+        }
     }
 }
 
-auto Window::add_callback(std::function<void(Window &)> cb) -> void {
+auto Window::add_callback(Callback cb) -> void {
     m_callbacks.push_back(std::move(cb));
 }
 
