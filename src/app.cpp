@@ -140,15 +140,6 @@ auto App::run() -> void {
 
     window.add_callback([&](glfw::Window &w) {
         if (w.get_key(GLFW_KEY_H) == GLFW_PRESS) {
-            m_x_offset += g_x_offset_delta * scaling_factor();
-            program.set_uniform("x_offset"sv, m_x_offset);
-            return true;
-        }
-        return false;
-    });
-
-    window.add_callback([&](glfw::Window &w) {
-        if (w.get_key(GLFW_KEY_L) == GLFW_PRESS) {
             m_x_offset -= g_x_offset_delta * scaling_factor();
             program.set_uniform("x_offset"sv, m_x_offset);
             return true;
@@ -157,8 +148,17 @@ auto App::run() -> void {
     });
 
     window.add_callback([&](glfw::Window &w) {
+        if (w.get_key(GLFW_KEY_L) == GLFW_PRESS) {
+            m_x_offset += g_x_offset_delta * scaling_factor();
+            program.set_uniform("x_offset"sv, m_x_offset);
+            return true;
+        }
+        return false;
+    });
+
+    window.add_callback([&](glfw::Window &w) {
         if (w.get_key(GLFW_KEY_J) == GLFW_PRESS) {
-            m_y_offset += g_y_offset_delta * scaling_factor();
+            m_y_offset -= g_y_offset_delta * scaling_factor();
             program.set_uniform("y_offset"sv, m_y_offset);
             return true;
         }
@@ -167,7 +167,7 @@ auto App::run() -> void {
 
     window.add_callback([&](glfw::Window &w) {
         if (w.get_key(GLFW_KEY_K) == GLFW_PRESS) {
-            m_y_offset -= g_y_offset_delta * scaling_factor();
+            m_y_offset += g_y_offset_delta * scaling_factor();
             program.set_uniform("y_offset"sv, m_y_offset);
             return true;
         }
