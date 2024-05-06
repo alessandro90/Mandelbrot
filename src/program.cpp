@@ -5,6 +5,7 @@
 #include <array>
 #include <cstdio>
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <initializer_list>
 #include <optional>
@@ -13,8 +14,9 @@
 #include <utility>
 
 namespace {
-[[nodiscard]] inline auto read_file(std::string_view path) -> std::optional<std::string> {
-    auto file = std::ifstream{path.data(), std::ios::binary};
+[[nodiscard]] inline auto read_file(std::filesystem::path const &path)
+    -> std::optional<std::string> {
+    auto file = std::ifstream{path, std::ios::binary};
     if (!file.is_open()) {
         return std::nullopt;
     }
@@ -76,19 +78,19 @@ private:
     return Shader{shader};
 }
 
-[[nodiscard]] auto get_shader_type(std::string_view path) -> int {
-    if (path.ends_with(".vert")) {
+[[nodiscard]] auto get_shader_type(std::filesystem::path const &path) -> int {
+    if (path.extension() == ".vert") {
         return GL_VERTEX_SHADER;
     }
 
-    if (path.ends_with(".frag")) {
+    if (path.extension() == ".frag") {
         return GL_FRAGMENT_SHADER;
     }
 
     fmt::println(stderr,
                  "Invalid shader type. Unsupported extension: {}.\n Supported extensions are: "
                  "'.vert', '.frag'.",
-                 path);
+                 path.c_str());
     std::abort();
 }
 
@@ -106,13 +108,13 @@ auto Program::operator=(Program &&other) noexcept -> Program & {
     return *this;
 }
 
-auto Program::create_and_link(std::initializer_list<std::string_view> shader_paths)
+auto Program::create_and_link(std::initializer_list<std::filesystem::path> shader_paths)
     -> std::optional<Program> {
     auto const prog_id = glCreateProgram();
-    for (auto shader_path : shader_paths) {
+    for (auto const &shader_path : shader_paths) {
         auto const src = read_file(shader_path);
         if (!src.has_value() || !src.has_value()) {
-            fmt::println(stderr, "Failed to open read shader file {}.", shader_path);
+            fmt::println(stderr, "Failed to open read shader file {}.", shader_path.c_str());
             glDeleteProgram(prog_id);
             return std::nullopt;
         }

@@ -3,9 +3,11 @@
 
 #include "glad/glad.h"
 
+#include <filesystem>
+
 class App {
 public:
-    auto run() -> void;
+    auto run(std::filesystem::path shaders_path) -> void;
 
 private:
     inline static constexpr auto s_default_x_offset = 0.0F;

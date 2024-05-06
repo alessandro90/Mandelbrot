@@ -2,6 +2,7 @@
 #define PROGRAM_HPP
 
 #include "glad/glad.h"
+#include <filesystem>
 #include <initializer_list>
 #include <optional>
 #include <string_view>
@@ -10,8 +11,8 @@
 namespace gl {
 class Program {
 public:
-    [[nodiscard]] static auto create_and_link(std::initializer_list<std::string_view> shader_paths)
-        -> std::optional<Program>;
+    [[nodiscard]] static auto create_and_link(
+        std::initializer_list<std::filesystem::path> shader_paths) -> std::optional<Program>;
 
     Program(Program const &) = delete;
     auto operator=(Program const &) -> Program & = delete;

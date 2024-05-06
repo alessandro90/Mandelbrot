@@ -11,6 +11,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <filesystem>
 #include <functional>
 #include <memory>
 #include <span>
@@ -69,7 +70,7 @@ auto App::scaling_factor() const -> float {
     return m_zoom / s_default_zoom;
 }
 
-auto App::run() -> void {
+auto App::run(std::filesystem::path shaders_path) -> void {
     auto const resource_cleaner = glfw::init();
 
     auto window = glfw::Window::make(resource_cleaner, g_width, g_height, "Mandelbrot"sv);
@@ -124,8 +125,9 @@ auto App::run() -> void {
 
     // FIXME: We assume shaders are in the src directory (sibling of build)
     // and we assume the working directory is in fact 'build'
-    auto const program = []() {
-        auto p = gl::Program::create_and_link({"../src/shader.vert"sv, "../src/shader.frag"sv});
+    auto const program = [=]() {
+        auto p = gl::Program::create_and_link(
+            {shaders_path / "shader.vert"sv, shaders_path / "shader.frag"sv});
         if (!p.has_value()) {
             fmt::println(stderr, "Cannot create program.");
             std::abort();

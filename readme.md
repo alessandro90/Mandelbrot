@@ -18,11 +18,22 @@ All dependencies are downloaded and compiled via cmake's FetchContent (see https
 - <kbd>c</kbd> reset
 - <kbd>space</kbd> change color map (on release)
 
-## Todo
+## Build
 
-- Parameterize the paths to the shaders (hardcoded for now, need to be fixed)
+```shell
+mkdir build
+cd build
+cmake ..
+make
+```
 
-Could use a json to do both.
+## Run
+
+From the build directory:
+
+```shell
+./mandelbrot ../shaders
+```
 
 ![alt-text](pics/mandelbrot_rainbow.jpg)
 ![alt-text](pics/mandelbrot_viridis.jpg)
