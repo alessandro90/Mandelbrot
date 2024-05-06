@@ -137,6 +137,7 @@ auto App::run() -> void {
     program.set_uniform("x_offset"sv, m_x_offset);
     program.set_uniform("y_offset"sv, m_y_offset);
     program.set_uniform("zoom"sv, m_zoom);
+    program.set_uniform("color_map"sv, m_color_map);
 
     window.add_callback([&](glfw::Window &w) {
         if (w.get_key(GLFW_KEY_H) == GLFW_PRESS) {
@@ -187,6 +188,20 @@ auto App::run() -> void {
         if (w.get_key(GLFW_KEY_N) == GLFW_PRESS) {
             m_zoom *= g_zoom_delta;
             program.set_uniform("zoom"sv, m_zoom);
+            return true;
+        }
+        return false;
+    });
+
+    window.add_callback([&](glfw::Window &w) {
+        if (w.get_key(GLFW_KEY_SPACE) == GLFW_PRESS && !m_space_key_is_pressed) {
+            m_space_key_is_pressed = true;
+            return true;
+        }
+        if (w.get_key(GLFW_KEY_SPACE) == GLFW_RELEASE && m_space_key_is_pressed) {
+            m_space_key_is_pressed = false;
+            m_color_map = (m_color_map + 1U) % 3U;
+            program.set_uniform("color_map"sv, m_color_map);
             return true;
         }
         return false;

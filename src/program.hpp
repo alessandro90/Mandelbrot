@@ -29,6 +29,8 @@ public:
             glUniform1f(loc, value);
         } else if constexpr (std::is_same_v<T, GLint>) {
             glUniform1i(loc, value);
+        } else if constexpr (std::is_same_v<T, GLuint>) {
+            glUniform1ui(loc, value);
         } else if constexpr (std::is_same_v<T, std::pair<float, float>>) {
             glUniform2f(loc, value.first, value.second);
         } else {

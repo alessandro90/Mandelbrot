@@ -16,11 +16,11 @@ All dependencies are downloaded and compiled via cmake's FetchContent (see https
 - <kbd>m</kbd> zoom in
 - <kbd>n</kbd> zoom out
 - <kbd>c</kbd> reset
+- <kbd>space</kbd> change color map (on release)
 
 ## Todo
 
 - Parameterize the paths to the shaders (hardcoded for now, need to be fixed)
-- Parameterize the color map to be used
 
 Could use a json to do both.
 

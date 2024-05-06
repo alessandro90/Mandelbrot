@@ -6,6 +6,7 @@ uniform vec2 view_port;
 uniform float x_offset;
 uniform float y_offset;
 uniform float zoom;
+uniform uint color_map;
 
 #define MAX_ITERS 1000U
 #define THRESHOLD 4.0f
@@ -589,15 +590,23 @@ vec3 rainbow(float val) {
     }
 }
 
+vec3 get_color(uint iterations) {
+    if (iterations == MAX_ITERS) {
+        return vec3(0.0f, 0.0f, 0.0f);
+    }
+    switch (color_map) {
+        case 0U:
+        return rainbow(float(iterations) / MAX_ITERS);
+        case 1U:
+        return inferno(float(iterations) / MAX_ITERS);
+        case 2U:
+        return viridis(float(iterations) / MAX_ITERS);
+    }
+    return vec3(0.0f, 0.0f, 0.0f);
+}
+
 void main() {
     vec2 normalized_xy = real_imag();
     uint iterations = calc_iters(normalized_xy.x, normalized_xy.y);
-    if (iterations == MAX_ITERS) {
-        FragColor = vec4(0.0f, 0.0f, 0.0f, 1.0);
-    } else {
-        vec3 color = rainbow(float(iterations) / MAX_ITERS);
-        // vec3 color = inferno(float(iterations) / MAX_ITERS);
-        // vec3 color = viridis(float(iterations) / MAX_ITERS);
-        FragColor = vec4(color, 1.0);
-    }
+    FragColor = vec4(get_color(iterations), 1.0);
 }
